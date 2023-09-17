@@ -1,31 +1,43 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const Calculate = (handleSelectedCards) => {
-    const [sum, setSum] = useState(0);
-    const [remain, setRemain]=useState(20);
-    const handleSelectedCards = () => {
-        const newSum = sum + Card.time; 
-        setSum(newSum);
-    
-        if (newSum > 20) {
-          alert('Credit exceeded 20!');
-         
-        }
-      };
+const Calculate = ({ selected }) => {
+  // Calculate total credit hours and total price
+  let totalCreditHours = 0;
+  let totalPrice = 0;
 
-      const handleSelectedCards= () =>{
-        const newRemain =remain - Card.time;
-        setRemain(newRemain);
-          
-        if(newRemain <0){
-            alert('you finish all credit!')
-        }
-      }
+  const selectedCourses = selected.map((course, index) => {
+    totalCreditHours += course.credit;
+    totalPrice += course.price;
+
     return (
-        <div>
-           <p>Total Credit Hour : {sum}</p> 
-        </div>
+      <li key={index}>{course.title}</li>
     );
+  });
+
+  // Calculate remaining credit hours
+  const remainingCreditHours = 20 - totalCreditHours;
+
+  // State variable to control adding the course
+  const [addToCourseList, setAddToCourseList] = useState(true);
+
+  // Show an alert if remaining credit hours are negative
+  useEffect(() => {
+    if (remainingCreditHours <= 0) {
+      setAddToCourseList(false); // Disable adding more courses
+    }
+  }, [remainingCreditHours]);
+
+  return (
+    <div>
+      <h2>Selected Items:</h2>
+      <ol>
+        {addToCourseList ? selectedCourses : <p>No more courses can be added.</p>}
+      </ol>
+      <p>Credit Hour Remaining: {Math.max(remainingCreditHours, 0)} hr</p>
+      <p>Total credit hour: {totalCreditHours}</p>
+      <p>Total price: $ {totalPrice}</p>
+    </div>
+  );
 };
 
 export default Calculate;
